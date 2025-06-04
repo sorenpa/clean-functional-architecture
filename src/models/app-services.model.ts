@@ -1,5 +1,6 @@
-import { PokemonService } from "@next-app/contracts";
+import { FavoritesService, PokemonService } from "@next-app/contracts";
 
 export type AppServices = {
-  pokemon: PokemonService;
+  pokemonService: PokemonService;
+  favoritesService: FavoritesService;
 };

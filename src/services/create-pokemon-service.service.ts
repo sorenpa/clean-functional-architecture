@@ -8,7 +8,7 @@ interface PokemonApiResponse {
   count: number;
   next: string | null;
   previous: string | null;
-  results: Pokemon[];
+  results: { name: string; url: string }[];
 }
 
 const DEFAULT_LIMIT = 20;
@@ -16,17 +16,25 @@ const DEFAULT_LIMIT = 20;
 export function createPokemonService(client: AxiosInstance): PokemonService {
   const store = createAsyncStore<PokemonListViewModel>();
 
-  async function loadPage(url: string) {
-    await store.run(async () => {
+  function loadPage(url: string) {
+    return store.run(async () => {
       const res = await client.get<PokemonApiResponse>(url);
       const { results, count, next, previous } = res.data;
+
+      // Step 1: Fetch all details in parallel using Promise.all
+      const detailedPokemonList = await Promise.all(
+        results.map(async (pokemon) => {
+          const detailRes = await client.get<Pokemon>(pokemon.url);
+          return detailRes.data;
+        })
+      );
 
       const offset = getOffsetFromUrl(url);
       const totalPages = Math.ceil(count / DEFAULT_LIMIT);
       const currentPage = Math.floor(offset / DEFAULT_LIMIT) + 1;
 
       return {
-        data: results,
+        data: detailedPokemonList,
         paging: {
           currentPage,
           totalPages,

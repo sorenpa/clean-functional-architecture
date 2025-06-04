@@ -1,15 +1,21 @@
 import { AppServices } from "@next-app/models";
-import { createPokeApiClient, createPokemonService } from "@next-app/services";
+import {
+  createFavoritesService,
+  createPokeApiClient,
+  createPokemonService,
+} from "@next-app/services";
 
 let cachedServices: AppServices | null = null;
 
 function buildServices(): AppServices {
   const pokeApiClient = createPokeApiClient();
 
-  const pokemon = createPokemonService(pokeApiClient);
+  const pokemonService = createPokemonService(pokeApiClient);
+  const favoritesService = createFavoritesService();
 
   return {
-    pokemon,
+    favoritesService,
+    pokemonService,
   };
 }
 

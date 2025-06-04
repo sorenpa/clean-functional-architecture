@@ -3,18 +3,20 @@
 import { useEffect } from "react";
 import { useStore } from "@framework/hooks";
 import { renderAsyncValue } from "@framework/helpers";
-import { PokemonService } from "@next-app/contracts";
+import { FavoritesService, PokemonService } from "@next-app/contracts";
 
 type Props = {
-  service: PokemonService;
+  pokemonService: PokemonService;
+  favoritesService: FavoritesService;
 };
 
-export function PokemonList({ service }: Props) {
-  const { data } = useStore(service);
+export function PokemonList({ pokemonService, favoritesService }: Props) {
+  const { data } = useStore(pokemonService);
+  const favorites = useStore(favoritesService);
 
   useEffect(() => {
-    service.loadInitial();
-  }, [service]);
+    pokemonService.loadInitial();
+  }, [pokemonService]);
 
   return (
     <div className="p-4">
@@ -25,30 +27,46 @@ export function PokemonList({ service }: Props) {
         success: (data) => (
           <>
             <ul className="mb-4">
-              {data.data.map((p) => (
-                <li key={p.name} className="border-b py-2">
-                  <a
-                    href={p.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
+              {data.data.map((p) => {
+                const isFav = !!favorites.data[p.name];
+                return (
+                  <li
+                    key={p.name}
+                    className="border-b py-2 flex justify-between items-center"
                   >
-                    {p.name}
-                  </a>
-                </li>
-              ))}
+                    <a
+                      href={p.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {p.name}
+                    </a>
+                    <button
+                      onClick={() => favoritesService.toggle(p.name)}
+                      className={`ml-2 text-sm px-2 py-1 rounded ${
+                        isFav
+                          ? "bg-yellow-300 hover:bg-yellow-400"
+                          : "bg-gray-100 hover:bg-gray-200"
+                      }`}
+                    >
+                      {isFav ? "★ Unfavorite" : "☆ Favorite"}
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
             <div className="flex justify-between">
               <button
                 disabled={!data.paging.hasPrev}
-                onClick={service.prev}
+                onClick={pokemonService.prev}
                 className="bg-gray-200 px-4 py-2 rounded disabled:opacity-50"
               >
                 Prev
               </button>
               <button
                 disabled={!data.paging.hasNext}
-                onClick={service.next}
+                onClick={pokemonService.next}
                 className="bg-gray-200 px-4 py-2 rounded disabled:opacity-50"
               >
                 Next
