@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useStore } from "@framework/hooks";
 import { renderAsyncValue } from "@framework/helpers";
 import { FavoritesService, PokemonService } from "@next-app/contracts";
+import { PokemonRow } from "./pokemon-row";
 
 type Props = {
   pokemonService: PokemonService;
@@ -32,19 +33,12 @@ export function PokemonList({ pokemonService, favoritesService }: Props) {
                 return (
                   <li
                     key={p.name}
-                    className="border-b py-2 flex justify-between items-center"
+                    className="grid grid-cols-[100px_100px_64px_160px_1fr] items-center gap-4 border-b py-1 text-sm"
                   >
-                    <a
-                      href={p.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      {p.name}
-                    </a>
+                    {/* Favorite Button */}
                     <button
                       onClick={() => favoritesService.toggle(p.name)}
-                      className={`ml-2 text-sm px-2 py-1 rounded ${
+                      className={`px-2 py-1 rounded ${
                         isFav
                           ? "bg-yellow-300 hover:bg-yellow-400"
                           : "bg-gray-100 hover:bg-gray-200"
@@ -52,6 +46,12 @@ export function PokemonList({ pokemonService, favoritesService }: Props) {
                     >
                       {isFav ? "★ Unfavorite" : "☆ Favorite"}
                     </button>
+
+                    {/* Name */}
+                    <div className="capitalize font-semibold">{p.name}</div>
+
+                    {/* Row Data */}
+                    <PokemonRow rowData$={p.rowData$} />
                   </li>
                 );
               })}

@@ -1,4 +1,20 @@
-# Functional React Architecture
+# Clean Functional Architecture
+
+## Table of Contents
+
+- [How to run](#how-to-run)
+- [Who Is This For?](#who-is-this-for)
+- [Framework-Agnostic Design](#framework-agnostic-design)
+- [Repo Folder Structure](#repo-folder-structure)
+- [Aim of the Architecture](#aim-of-the-architecture)
+- [Architectural Principles](#architectural-principles)
+  - [Functional Paradigm](#functional-paradigm)
+  - [Clean/Hex-Inspired Layers](#cleanhex-inspired-layers)
+  - [Dependencies as Services](#dependencies-as-services)
+  - [Inversion of Control (IoC)](#inversion-of-control-ioc)
+- [Optional Architectural Concepts](#optional-architectural-concepts)
+  - [RxJS Powered State Services](#rxjs-powered-state-services)
+  - [Async Type](#async-type)
 
 ## How to run
 
@@ -28,9 +44,24 @@ It’s designed for:
 - Functional thinkers who want clear data flow and testable units,
 - Minimalists who value simplicity over boilerplate,
 - Scalable projects that need structure without heavyweight frameworks,
-- Teams who want explicit dependency injection and React without magic.
+- Teams who want explicit dependency injection and without magic.
 
-## 🗂 Folder Structure
+## Framework-Agnostic Design
+
+While this architecture originated from a React use case, it is entirely framework-agnostic. The core concepts—Inversion of Control via closures, RxJS-based state, and explicit prop-based injection—are not tied to React, JSX, or the DOM.
+
+The same service patterns can be used and reused across environments:
+
+- ✅ React (CSR or SSR) — Works without context, hooks, or global state.
+- ✅ Angular — Can coexist with or replace Angular DI in feature modules.
+- ✅ Next.js — Fits cleanly into server/client boundaries with full control.
+- ✅ Node.js / CLI tools — Great for composable backends and scripts.
+- ✅ React Native / Expo — No dependency on browser APIs or DOM.
+- ✅ Electron / Micro frontends — Encapsulated, testable service boundaries.
+
+Because logic lives in plain closures and observable streams, platform concerns are decoupled from business logic—enabling true multi-platform reuse without vendor lock-in or leaky abstractions.
+
+## Repo Folder Structure
 
 This project follows a minimalist, functional frontend architecture that cleanly separates concerns, enabling composability, testability, and maintainability — all without introducing unnecessary complexity or external dependencies. It is inspired by the principles of Clean Architecture and Inversion of Control (IoC), but implemented using closures, interfaces, and RxJS observables — making it fully compatible with React's functional paradigm.
 
@@ -41,13 +72,13 @@ This project follows a minimalist, functional frontend architecture that cleanly
 │   ├── features/       # Presentation layer: UI components and feature logic
 │   ├── services/       # App-specific business logic: reactive service closures
 │   ├── contracts/      # App-specific contracts
-│   ├── models/         # App-specific domain models (aka "core domain")
-│   └── system/         # App-specific service orchestration and wirering
+│   ├── models/         # App-specific domain models
+│   └── system/         # App-specific service orchestration and wiring (IoC composition root)
 │
 ├── framework/          # Reusable app-agnostic base architecture patterns (e.g., generic services, types)
 │   ├── services/       # Reusable app-agnostic business logic: reactive service closures
 │   ├── contracts/      # Reusable app-agnostic contracts
-│   ├── models/         # Reusable app-agnostic domain models (aka "core domain")
+│   ├── models/         # Reusable app-agnostic domain models
 │   ├── hooks/          # Reusable app-agnostic hooks
 │   └── helpers/        # Reusable app-agnostic helpers
 └── ...
@@ -81,7 +112,7 @@ Service orchestration and wiring for the application
 
 Reusable framework-level building blocks that abstract architectural patterns (e.g., state stores, async helpers). These can be reused across apps and are agnostic of app-specific logic. Follows same folder principles as above, only difference is the contents in the framework folder are app-agnostic in nature and could be used in any react based application.
 
-The framework folder also includes self-explenatory `hooks/` and `helpers/` folders.
+The framework folder also includes self-explanatory `hooks/` and `helpers/` folders.
 
 ## Aim of the Architecture
 
@@ -287,7 +318,7 @@ const CounterView: React.FC<Props> = ({ counterService }) => {
 
 This section describes optional architectural concepts that could be applied by other means. These concepts are encouraged but are of lesser importance than the afore mentioned features.
 
-### RxJS-Powered State Services (Stores)
+### RxJS Powered State Services
 
 Web frontends are inherently reactive: user actions, network events, and timers constantly trigger asynchronous changes that must be reflected in the UI. To manage this event-driven complexity, this architecture proposes leveraging RxJS — a powerful library for composing and reacting to asynchronous streams of data.
 
@@ -459,9 +490,9 @@ Because the store is framework-agnostic, it's easy to layer advanced behavior: s
 
 These hooks let you cleanly bind imperative reactive state into React’s declarative rendering model, without relying on `useEffect` or `Context`.
 
-### The Async<T> Type
+### Async Type
 
-Async<T> is a generic type that models the lifecycle of an asynchronous value. It tracks whether data is loading, has succeeded, or failed, along with the associated value or error.
+`Async<T>` is a generic type that models the lifecycle of an asynchronous value. It tracks whether data is loading, has succeeded, or failed, along with the associated value or error.
 
 This pattern decouples the loading/error UI from any specific framework like React Query, and works in any RxJS-powered context.
 

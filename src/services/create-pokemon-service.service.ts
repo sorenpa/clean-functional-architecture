@@ -1,8 +1,18 @@
 import { asyncValue } from "@framework/helpers";
+import { Async } from "@framework/models";
 import { createAsyncStore } from "@framework/services";
 import { PokemonService } from "@next-app/contracts";
-import { Pokemon, PokemonListViewModel } from "@next-app/models";
+import { PokemonDetails, PokemonListViewModel } from "@next-app/models";
 import { AxiosInstance } from "axios";
+import {
+  catchError,
+  from,
+  map,
+  Observable,
+  of,
+  shareReplay,
+  startWith,
+} from "rxjs";
 
 interface PokemonApiResponse {
   count: number;
@@ -16,25 +26,23 @@ const DEFAULT_LIMIT = 20;
 export function createPokemonService(client: AxiosInstance): PokemonService {
   const store = createAsyncStore<PokemonListViewModel>();
 
-  function loadPage(url: string) {
-    return store.run(async () => {
+  function loadPage(url: string): void {
+    store.run(async () => {
       const res = await client.get<PokemonApiResponse>(url);
       const { results, count, next, previous } = res.data;
-
-      // Step 1: Fetch all details in parallel using Promise.all
-      const detailedPokemonList = await Promise.all(
-        results.map(async (pokemon) => {
-          const detailRes = await client.get<Pokemon>(pokemon.url);
-          return detailRes.data;
-        })
-      );
 
       const offset = getOffsetFromUrl(url);
       const totalPages = Math.ceil(count / DEFAULT_LIMIT);
       const currentPage = Math.floor(offset / DEFAULT_LIMIT) + 1;
 
+      // Instead of loading full pokemon here, build per-pokemon observables
+      const rows = results.map((p) => ({
+        name: p.name,
+        rowData$: createPokemonDetailStream(p.url),
+      }));
+
       return {
-        data: detailedPokemonList,
+        data: rows,
         paging: {
           currentPage,
           totalPages,
@@ -45,6 +53,24 @@ export function createPokemonService(client: AxiosInstance): PokemonService {
         },
       };
     });
+  }
+
+  function createPokemonDetailStream(
+    url: string
+  ): Observable<Async<PokemonDetails>> {
+    return from(client.get(url)).pipe(
+      map((res) => res.data),
+      map((pokemon) =>
+        asyncValue.data({
+          image: pokemon.sprites.front_default,
+          types: pokemon.types,
+          stats: pokemon.stats,
+        })
+      ),
+      catchError((err) => of(asyncValue.error(err))),
+      startWith(asyncValue.loading()),
+      shareReplay(1)
+    );
   }
 
   function getOffsetFromUrl(url: string | null): number {
