@@ -5,6 +5,7 @@ import { useObservable } from "@framework/hooks";
 import { Async } from "@framework/models";
 import { asyncValue, renderAsyncValue } from "@framework/helpers";
 import Image from "next/image";
+import { LoadingSpinner } from "./loading-spinner";
 
 interface Props {
   rowData$: Observable<Async<PokemonDetails>>;
@@ -18,7 +19,7 @@ export const PokemonRow: FC<Props> = ({ rowData$ }) => {
     <>
       {renderAsyncValue(data, {
         empty: () => <div>No data</div>,
-        loading: () => <div>Loading…</div>,
+        loading: () => <LoadingSpinner />,
         error: (error) => <div>Error: {String(error)}</div>,
         success: (data) => (
           <>

@@ -5,6 +5,7 @@ import { useStore } from "@framework/hooks";
 import { renderAsyncValue } from "@framework/helpers";
 import { FavoritesService, PokemonService } from "@next-app/contracts";
 import { PokemonRow } from "./pokemon-row";
+import { LoadingSpinner } from "./loading-spinner";
 
 type Props = {
   pokemonService: PokemonService;
@@ -23,7 +24,7 @@ export function PokemonList({ pokemonService, favoritesService }: Props) {
     <div className="p-4">
       {renderAsyncValue(data, {
         empty: () => <div>No Pokémon found.</div>,
-        loading: () => <div>Loading…</div>,
+        loading: () => <LoadingSpinner />,
         error: (error) => <div>Error: {String(error)}</div>,
         success: (data) => (
           <>

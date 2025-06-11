@@ -8,7 +8,7 @@ export function useStore<T>(store: Store<T>) {
   const { serviceId } = useAppService(store);
   const data = useObservable(store.state$, store.getSnapshot());
 
-  const asyncState = useMemo(() => ({ data, serviceId }), [data, serviceId]);
+  const state = useMemo(() => ({ data, serviceId }), [data, serviceId]);
 
-  return asyncState;
+  return state;
 }

@@ -21,7 +21,7 @@ interface PokemonApiResponse {
   results: { name: string; url: string }[];
 }
 
-const DEFAULT_LIMIT = 20;
+const DEFAULT_LIMIT = 10;
 
 export function createPokemonService(client: AxiosInstance): PokemonService {
   const store = createAsyncStore<PokemonListViewModel>();
