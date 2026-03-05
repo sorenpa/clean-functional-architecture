@@ -15,7 +15,7 @@ function loading(): AsyncLoading {
   return { status: AsyncStatus.LOADING };
 }
 
-function error(error: Error): AsyncError {
+function error(error: unknown): AsyncError {
   return { status: AsyncStatus.ERROR, error };
 }
 

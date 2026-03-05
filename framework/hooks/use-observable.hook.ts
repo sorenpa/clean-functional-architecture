@@ -1,21 +1,32 @@
 import { useMemo, useRef, useSyncExternalStore } from "react";
 import { Observable } from "rxjs";
-import { createSyncObservable } from "@framework/helpers";
+
+function createSyncObservable<T>(observable$: Observable<T>, initial: T) {
+  let current = initial;
+  return {
+    subscribe: (callback: () => void) =>
+      observable$.subscribe((value) => {
+        current = value;
+        callback();
+      }),
+    getSnapshot: () => current,
+  };
+}
 
 export function useObservable<T>(observable$: Observable<T>, initial: T): T {
   const initialRef = useRef(initial);
 
-  const syncObservable$ = useMemo(
+  const sync$ = useMemo(
     () => createSyncObservable(observable$, initialRef.current),
     [observable$]
   );
 
   return useSyncExternalStore(
     (cb) => {
-      const sub = syncObservable$.subscribe(() => cb());
+      const sub = sync$.subscribe(cb);
       return () => sub.unsubscribe();
     },
-    () => syncObservable$.getSnapshot(),
-    () => syncObservable$.getSnapshot()
+    () => sync$.getSnapshot(),
+    () => sync$.getSnapshot()
   );
 }
