@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { PokemonDetails } from "@next-app/models";
 import { Observable } from "rxjs";
-import { useObservable } from "@framework/hooks";
+import { useObservable } from "@next-app/hooks";
 import { Async } from "@framework/models";
 import { asyncValue, renderAsyncValue } from "@framework/helpers";
 import Image from "next/image";

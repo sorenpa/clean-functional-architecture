@@ -1,7 +1,6 @@
 import { Observable } from "rxjs";
-import { AppService } from "./app-service.contract";
 
-export interface ReactiveStore<T> extends AppService {
+export interface Cell<T> {
   state$: Observable<T>;
   getSnapshot(): T;
   set(state: T): void;

@@ -1,8 +1,9 @@
-import { ReactiveStore } from "@framework/contracts";
+import { Cell } from "@framework/contracts";
 import { Async } from "@framework/models";
 import { PokemonListViewModel } from "@next-app/models";
 
-export interface PokemonService extends ReactiveStore<Async<PokemonListViewModel>> {
+export interface PokemonService {
+  pokemon$: Cell<Async<PokemonListViewModel>>;
   loadInitial: () => void;
   next: () => void;
   prev: () => void;

@@ -1,3 +1,2 @@
-export * from "./app-service.contract";
-export * from "./reactive-store.contract";
+export * from "./cell.contract";
 export * from "./command.contract";

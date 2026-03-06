@@ -1,5 +1,5 @@
 import { Observable, OperatorFunction } from "rxjs";
-import { ReactiveStore } from "../contracts";
+import { Cell } from "../contracts";
 import { Async } from "./async.model";
 
 export type ConcurrencyOperator<TInput, TResult> = (
@@ -7,11 +7,11 @@ export type ConcurrencyOperator<TInput, TResult> = (
 ) => OperatorFunction<TInput, TResult>;
 
 export type CommandParams<TInput, TResult> = {
-  store: ReactiveStore<Async<TResult>>;
-  request: (input: TInput) => Observable<TResult>;
-  strategy?: OperatorFunction<TInput, TInput>;
+  cell: Cell<Async<TResult>>;
+  effect: (input: TInput) => Observable<TResult>;
+  tempo?: OperatorFunction<TInput, TInput>;
   concurrency?: ConcurrencyOperator<TInput, TResult>;
-  lifecycle?: OperatorFunction<TResult, Async<TResult>>;
+  projection?: OperatorFunction<TResult, Async<TResult>>;
 };
 
 export type CommandPreset<TInput, TResult> = Partial<CommandParams<TInput, TResult>>;

@@ -1,18 +1,18 @@
-import { createReactiveStore } from "@framework/factories";
+import { createCell } from "@framework/factories";
 import { FavoritesService } from "@next-app/contracts";
 
 export function createFavoritesService(): FavoritesService {
-  const store = createReactiveStore<Record<string, true>>({});
+  const favorites$ = createCell<Record<string, true>>({});
 
   return {
-    ...store,
+    favorites$,
     toggle: (id: string) => {
-      const current = store.getSnapshot();
+      const current = favorites$.getSnapshot();
       const next = { ...current };
       if (next[id]) delete next[id];
       else next[id] = true;
-      store.set(next);
+      favorites$.set(next);
     },
-    isFavorite: (id: string) => !!store.getSnapshot()[id],
+    isFavorite: (id: string) => !!favorites$.getSnapshot()[id],
   };
 }

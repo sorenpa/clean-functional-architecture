@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useStore } from "@framework/hooks";
+import { useCell } from "@next-app/hooks";
 import { renderAsyncValue } from "@framework/helpers";
 import { FavoritesService, PokemonService } from "@next-app/contracts";
 import { PokemonRow } from "./pokemon-row";
@@ -13,8 +13,8 @@ type Props = {
 };
 
 export function PokemonList({ pokemonService, favoritesService }: Props) {
-  const { data } = useStore(pokemonService);
-  const favorites = useStore(favoritesService);
+  const data = useCell(pokemonService.pokemon$);
+  const favorites = useCell(favoritesService.favorites$);
 
   useEffect(() => {
     pokemonService.loadInitial();
@@ -30,7 +30,7 @@ export function PokemonList({ pokemonService, favoritesService }: Props) {
           <>
             <ul className="mb-4">
               {data.data.map((p) => {
-                const isFav = !!favorites.data[p.name];
+                const isFav = !!favorites[p.name];
                 return (
                   <li
                     key={p.name}
