@@ -1,4 +1,4 @@
-import { Cell } from "@framework/contracts";
+import { Cell } from "@framework";
 
 export interface FavoritesService {
   favorites$: Cell<Record<string, true>>;

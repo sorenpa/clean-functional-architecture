@@ -1,4 +1,4 @@
-import { Async } from "@framework/models";
+import { Async } from "@framework";
 import { Observable } from "rxjs";
 
 interface PokemonType {

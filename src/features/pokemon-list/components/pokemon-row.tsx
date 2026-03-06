@@ -2,8 +2,7 @@ import { FC } from "react";
 import { PokemonDetails } from "@next-app/models";
 import { Observable } from "rxjs";
 import { useObservable } from "@next-app/hooks";
-import { Async } from "@framework/models";
-import { asyncValue, renderAsyncValue } from "@framework/helpers";
+import { Async, asyncValue, renderAsyncValue } from "@framework";
 import Image from "next/image";
 import { LoadingSpinner } from "./loading-spinner";
 

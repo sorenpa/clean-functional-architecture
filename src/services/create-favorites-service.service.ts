@@ -1,4 +1,4 @@
-import { createCell } from "@framework/factories";
+import { createCell } from "@framework";
 import { FavoritesService } from "@next-app/contracts";
 
 export function createFavoritesService(): FavoritesService {

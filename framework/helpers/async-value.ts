@@ -5,7 +5,7 @@ import {
   AsyncError,
   AsyncLoading,
   AsyncStatus,
-} from "@framework/models";
+} from "../models";
 
 function empty(): AsyncEmpty {
   return { status: AsyncStatus.EMPTY };

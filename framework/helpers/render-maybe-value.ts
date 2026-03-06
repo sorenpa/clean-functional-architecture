@@ -1,4 +1,4 @@
-import { Maybe, MaybeStatus } from "@framework/models";
+import { Maybe, MaybeStatus } from "../models";
 import { maybeValue } from "./maybe-value";
 
 type RenderHandlers<T, R> = {

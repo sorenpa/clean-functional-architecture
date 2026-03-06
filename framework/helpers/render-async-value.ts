@@ -1,4 +1,4 @@
-import { Async, AsyncStatus } from "@framework/models";
+import { Async, AsyncStatus } from "../models";
 import { asyncValue } from "./async-value";
 
 type RenderHandlers<T, R> = {

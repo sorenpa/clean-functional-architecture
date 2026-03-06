@@ -1,4 +1,4 @@
-import { Cell } from "@framework/contracts";
+import { Cell } from "@framework";
 import { useObservable } from "./use-observable.hook";
 
 export function useCell<T>(cell: Cell<T>): T {

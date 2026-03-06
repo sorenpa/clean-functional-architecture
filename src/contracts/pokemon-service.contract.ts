@@ -1,5 +1,4 @@
-import { Cell } from "@framework/contracts";
-import { Async } from "@framework/models";
+import { Cell, Async } from "@framework";
 import { PokemonListViewModel } from "@next-app/models";
 
 export interface PokemonService {

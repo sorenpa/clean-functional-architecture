@@ -1,4 +1,4 @@
-import { Maybe, MaybeNone, MaybeSome, MaybeStatus } from "@framework/models";
+import { Maybe, MaybeNone, MaybeSome, MaybeStatus } from "../models";
 
 function none(): MaybeNone {
   return { status: MaybeStatus.NONE };
