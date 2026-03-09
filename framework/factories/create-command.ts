@@ -1,25 +1,23 @@
 import { exhaustMap, Subject } from "rxjs";
 import { Command } from "../contracts";
-import { asyncProjection, identityTempo } from "../helpers";
+import { identityTempo } from "../helpers";
 import { CommandParams } from "../models";
 
-export function createCommand<TInput, TResult>(
-  params: CommandParams<TInput, TResult>
+export function createCommand<TCell, TInput = void>(
+  params: CommandParams<TCell, TInput>
 ): Command<TInput> {
 
-  const { cell, effect, tempo, projection, concurrency } = params;
+  const { cell, effect, tempo, concurrency } = params;
 
   const trigger$ = new Subject<TInput>();
 
-  const tempoBehaviour = tempo ?? identityTempo();
-  const concurrentBehaviour = concurrency ? concurrency(effect) : exhaustMap(effect);
-  const projectionBehaviour = projection ?? asyncProjection();
+  const tempoControl = tempo ?? identityTempo();
+  const concurrencyPolicy = concurrency ? concurrency(effect) : exhaustMap(effect);
 
   trigger$
     .pipe(
-      tempoBehaviour,
-      concurrentBehaviour,
-      projectionBehaviour
+      tempoControl,
+      concurrencyPolicy,
     )
     .subscribe(cell.set);
 
