@@ -2,9 +2,10 @@ import { FC } from "react";
 import { PokemonDetails } from "@next-app/models";
 import { Observable } from "rxjs";
 import { useObservable } from "@next-app/hooks";
-import { Async, asyncValue, renderAsyncValue } from "@framework";
+import { Async, asyncValue } from "@framework";
 import Image from "next/image";
 import { LoadingSpinner } from "./loading-spinner";
+import { renderAsyncValue } from "@next-app/helpers/render-async-value";
 
 interface Props {
   rowData$: Observable<Async<PokemonDetails>>;
