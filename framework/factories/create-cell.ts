@@ -8,6 +8,7 @@ export function createCell<T>(initial: T): Cell<T> {
     state$: subject.asObservable(),
     getSnapshot: () => subject.getValue(),
     set: (state: T) => subject.next(state),
+    update: (fn: (prev: T) => T) => subject.next(fn(subject.getValue())),
     reset: () => subject.next(initial),
   };
 }

@@ -2,10 +2,10 @@
 
 import { useEffect } from "react";
 import { useCell } from "@next-app/hooks";
-import { renderAsyncValue } from "@framework";
 import { FavoritesService, PokemonService } from "@next-app/contracts";
 import { PokemonRow } from "./pokemon-row";
 import { LoadingSpinner } from "./loading-spinner";
+import { renderAsyncValue } from "@next-app/helpers/render-async-value";
 
 type Props = {
   pokemonService: PokemonService;

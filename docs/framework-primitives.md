@@ -14,10 +14,11 @@
 
 ```ts
 export interface Cell<T> {
-  state$: Observable<T>;   // RxJS stream of the current value
-  getSnapshot(): T;        // synchronous read
-  set(state: T): void;     // update value
-  reset(): void;           // revert to initial value
+  state$: Observable<T>;              // RxJS stream of the current value
+  getSnapshot(): T;                   // synchronous read
+  set(state: T): void;               // replace value
+  update(fn: (prev: T) => T): void;  // derive next value from current
+  reset(): void;                     // revert to initial value
 }
 ```
 
@@ -78,7 +79,7 @@ const Component: React.FC<{ service: TodoService }> = ({ service }) => {
 `Command<TInput>` connects a user action to an async effect and pushes the result into a Cell. The full pipeline is:
 
 ```
-trigger → tempo → concurrency(effect) → projection → cell.set
+execute() → trigger$ → [tempo] → [concurrency → projection → effect] → commit → cell
 ```
 
 ```ts
@@ -132,33 +133,27 @@ export function createTodoService(): TodoService {
 
 ## Command Presets
 
-`CommandPreset<TInput, TResult>` is a `Partial<CommandParams>` — a reusable fragment of command configuration that can be spread into `createCommand`:
+The `tempo` and `concurrency` params accept any compatible RxJS operators, making it straightforward to compose custom policies inline:
 
 ```ts
-export type CommandPreset<TInput, TResult> = Partial<CommandParams<TInput, TResult>>;
-```
-
-Three combination presets are available in `@framework/helpers`:
-
-| Preset | Tempo | Concurrency | Use case |
-|---|---|---|---|
-| `debounceSwitch(ms)` | `debounceTime` | `switchMap` | search / autocomplete |
-| `debounceExhaust(ms)` | `debounceTime` | `exhaustMap` | debounced submit |
-| `throttleExhaust(ms)` | `throttleTime` | `exhaustMap` | rate-limited actions |
-
-Usage:
-
-```ts
-import { debounceSwitch, throttleExhaust } from "@framework/helpers";
+import { debounceTime, switchMap, throttleTime, exhaustMap } from 'rxjs';
 
 // cancel in-flight on new keystroke
-const searchCommand = createCommand({ cell, effect: fetchResults, ...debounceSwitch(300) });
+const searchCommand = createCommand({
+  cell,
+  effect: fetchResults,
+  tempo: debounceTime(300),
+  concurrency: (p) => switchMap(p),
+});
 
 // ignore rapid clicks while a request is in-flight
-const pageCommand = createCommand({ cell, effect: fetchPage, ...throttleExhaust(200) });
+const pageCommand = createCommand({
+  cell,
+  effect: fetchPage,
+  tempo: throttleTime(200),
+  concurrency: (p) => exhaustMap(p),
+});
 ```
-
-The individual building blocks (`identityTempo`, `asyncProjection`) are also exported for use in custom presets.
 
 ## Async Type
 
@@ -195,7 +190,7 @@ renderAsyncValue(todos, {
 });
 ```
 
-> **Note:** `asyncProjection()` — used inside `Command` — automatically drives these transitions:
+> **Note:** `createCommand` automatically drives these transitions internally:
 > it emits `loading` when the effect starts, `data` on success, and `error` on failure.
 
 ## Maybe Type
